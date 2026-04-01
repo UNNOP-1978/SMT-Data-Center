@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMT Data Center - Stanley</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; }
+        .app-container { display: flex; flex-direction: column; height: 100%; }
+        
+        /* Header */
+        .header { background: #0f172a; color: white; padding: 15px 25px; display: flex; align-items: center; border-bottom: 3px solid #f59e0b; }
+        .logo { font-size: 26px; font-weight: 900; color: #f59e0b; margin-right: 15px; font-style: italic; }
+        
+        .main-layout { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background: #1e293b; padding-top: 20px; flex-shrink: 0; }
+        .menu-item { padding: 15px 25px; color: #cbd5e1; cursor: pointer; transition: 0.3s; font-size: 15px; }
+        .menu-item:hover { background: #334155; color: white; }
+        .menu-item.active { background: #f59e0b; color: #0f172a; font-weight: bold; }
+
+        /* Content Area */
+        .content-area { flex: 1; padding: 0; position: relative; background: white; overflow: hidden; }
+        .tab-content { display: none; width: 100%; height: 100%; overflow: auto; }
+        .tab-content.active { display: block; }
+        
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* Search Page Styling */
+        .search-container { padding: 40px; text-align: center; max-width: 800px; margin: 0 auto; }
+        .google-search-box { width: 100%; padding: 15px 25px; border-radius: 30px; border: 1px solid #dfe1e5; font-size: 18px; outline: none; box-shadow: 0 1px 6px rgba(32,33,36,.28); box-sizing: border-box; }
+        .google-search-box:focus { box-shadow: 0 1px 8px rgba(32,33,36,.4); }
+        .search-btn { padding: 12px 25px; border-radius: 5px; border: none; background: #f8f9fa; color: #3c4043; cursor: pointer; margin-top: 20px; font-size: 15px; border: 1px solid #f8f9fa; transition: 0.2s; font-weight: bold; }
+        .search-btn:hover { border: 1px solid #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,.1); background: #f1f3f4; }
+        
+        /* Result Layout */
+        .result-card { margin-top: 40px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; text-align: left; display: none; background: #ffffff; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .part-title { font-size: 28px; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; }
+        
+        .action-buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .btn-link { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: 0.2s; color: white; }
+        
+        /* Button Colors */
+        .btn-google-pdf { background-color: #d93025; }
+        .btn-google-pdf:hover { background-color: #b3140b; transform: translateY(-2px); }
+        .btn-google-web { background-color: #fbbc05; color: #333; }
+        .btn-google-web:hover { background-color: #e0a800; transform: translateY(-2px); }
+        .btn-alldatasheet { background-color: #0046ad; }
+        .btn-alldatasheet:hover { background-color: #003380; transform: translateY(-2px); }
+        .btn-octopart { background-color: #10b981; }
+        .btn-octopart:hover { background-color: #059669; transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <div class="logo">STANLEY</div>
+        <div>| Machine Develop SMT Data Center</div>
+    </div>
+
+    <div class="main-layout">
+        <div class="sidebar">
+            <div class="menu-item active" onclick="switchTab('tab1', this)">1. Data Mounter Parameter</div>
+            <div class="menu-item" onclick="switchTab('tab2', this)">2. Design Stencil (Transistor)</div>
+            <div class="menu-item" onclick="switchTab('tab3', this)">3. Technical Datasheet Search</div>
+        </div>
+
+        <div class="content-area">
+            <div id="tab1" class="tab-content active">
+                <iframe src="https://asianstanley.github.io/PRODUCTION-SMT/home.html"></iframe>
+            </div>
+
+            <div id="tab2" class="tab-content">
+                <div style="padding: 50px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #f8fafc;">
+                    <h2 style="color: #1e293b; font-size: 28px;">📁 โฟลเดอร์ Design Stencil (Network Drive)</h2>
+                    <p style="color: #64748b; font-size: 16px; max-width: 600px; margin-bottom: 30px;">
+                        เนื่องจากนโยบายความปลอดภัยของ Web Browser จะไม่สามารถฝังหน้าต่างคอมพิวเตอร์ลงในเว็บได้โดยตรง กรุณากดปุ่มด้านล่างเพื่อเปิดหน้าต่างโฟลเดอร์แทนครับ
+                    </p>
+                    
+                    <a href="file://172.16.0.199/Dashboard" target="_blank" style="display: inline-block; padding: 15px 40px; background: #0046ad; color: white; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s;">
+                        📂 เปิด Network Drive (172.16.0.199)
+                    </a>
+                </div>
+            </div>
+
+            <div id="tab3" class="tab-content">
+                <div class="search-container">
+                    <div style="font-size: 40px; font-weight: 900; margin-bottom: 20px; letter-spacing: -1px;">
+                        <span style="color: #4285F4;">G</span><span style="color: #EA4335;">l</span><span style="color: #FBBC05;">o</span><span style="color: #4285F4;">b</span><span style="color: #34A853;">a</span><span style="color: #EA4335;">l</span>
+                        <span style="color: #5f6368; font-size: 30px;"> Component Search</span>
+                    </div>
+                    
+                    <input type="text" id="searchInput" class="google-search-box" placeholder="พิมพ์ชื่อ Part Code (เช่น CER7042B-101M-RB, D10XB60)" onkeypress="handleEnter(event)">
+                    <br>
+                    <button class="search-btn" onclick="searchGlobalData()">🔍 ค้นหา Datasheet อัตโนมัติ</button>
+
+                    <div id="resultBox" class="result-card">
+                        <p style="color: #64748b; margin: 0; font-weight: bold;">สร้างลิงก์ค้นหาสำหรับ Part Number:</p>
+                        <h2 id="resPartTitle" class="part-title"></h2>
+                        <p style="color: #475569;">เลือกระบบฐานข้อมูลด้านล่างเพื่อดึง Spec หรือ Download PDF:</p>
+                        
+                        <div class="action-buttons">
+                            <a id="linkGooglePDF" href="#" target="_blank" class="btn-link btn-google-pdf">
+                                <span>📄 ค้นหาไฟล์ PDF ตรงๆ ด้วย Google (บังคับหาคำเป๊ะๆ)</span>
+                                <span>➔</span>
+                            </a>
+
+                            <a id="linkGoogleWeb" href="#" target="_blank" class="btn-link btn-google-web">
+                                <span>🌐 ค้นหาหน้า Spec ผู้ผลิตด้วย Google</span>
+                                <span>➔</span>
+                            </a>
+
+                            <a id="linkAllDatasheet" href="#" target="_blank" class="btn-link btn-alldatasheet">
+                                <span>📘 ค้นหาบนฐานข้อมูล ALLDATASHEET</span>
+                                <span>➔</span>
+                            </a>
+                            
+                            <a id="linkOctopart" href="#" target="_blank" class="btn-link btn-octopart">
+                                <span>⚙️ เช็คขนาด (Dimension) และผู้ผลิตบน OCTOPART</span>
+                                <span>➔</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <p id="noInputAlert" style="color: #d93025; display: none; margin-top: 20px; font-weight: bold;">
+                        ⚠️ กรุณาพิมพ์ชื่อ Part Code ก่อนกดค้นหาครับ
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. ฟังก์ชันสลับหน้า Tab
+    function switchTab(id, el) {
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById(id).classList.add('active');
+    }
+
+    // 2. ฟังก์ชันรองรับการกดปุ่ม Enter ในช่องพิมพ์
+    function handleEnter(event) {
+        if (event.key === "Enter") {
+            searchGlobalData();
+        }
+    }
+
+    // 3. ฟังก์ชันหลัก: สร้างลิงก์ค้นหาอัตโนมัติ (ไม่ใช้ฐานข้อมูลในตัว)
+    function searchGlobalData() {
+        const input = document.getElementById('searchInput').value.trim();
+        const resBox = document.getElementById('resultBox');
+        const alertBox = document.getElementById('noInputAlert');
+        
+        // เช็คว่าพิมพ์อะไรมาหรือยัง
+        if (input === "") {
+            resBox.style.display = "none";
+            alertBox.style.display = "block";
+            return;
+        }
+
+        // ซ่อน Alert และแสดงกล่องผลลัพธ์
+        alertBox.style.display = "none";
+        resBox.style.display = "block";
+        
+        // โชว์ชื่อ Part ที่กำลังหา
+        document.getElementById('resPartTitle').innerText = input.toUpperCase();
+
+        // ----------------------------------------------------
+        // หัวใจหลัก: สร้าง Link วิ่งไปหาต้นตอตามสูตร Google Dorks
+        // ----------------------------------------------------
+        const encodedInput = encodeURIComponent(input);
+        
+        // ใส่ %22 (เครื่องหมายฟันหนู "") ครอบคำเพื่อบังคับให้ Google ห้ามเดาคำอื่น ต้องเป๊ะเท่านั้น!
+        const exactMatch = `%22${encodedInput}%22`; 
+
+        // สร้าง Link ให้แต่ละปุ่ม
+        document.getElementById('linkGooglePDF').href = `https://www.google.com/search?q=${exactMatch}+datasheet+filetype:pdf`;
+        document.getElementById('linkGoogleWeb').href = `https://www.google.com/search?q=${exactMatch}+"features"+OR+"specifications"`;
+        document.getElementById('linkAllDatasheet').href = `https://www.alldatasheet.com/view.jsp?Searchword=${encodedInput}`;
+        document.getElementById('linkOctopart').href = `https://octopart.com/search?q=${encodedInput}`;
+    }
+</script>
+
+</body>
+</html>
