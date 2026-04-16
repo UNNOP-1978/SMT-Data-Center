@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMT Data Center - Stanley</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f7f6; }
         
@@ -35,13 +38,30 @@
         .menu-item.active { background: #f59e0b; color: #0f172a; font-weight: bold; }
 
         /* Content Area */
-        .content-area { flex: 1; padding: 0; position: relative; background: #e2e8f0; overflow: auto; }
+        .content-area { flex: 1; padding: 0; position: relative; background: #ffffff; overflow: auto; }
         .tab-content { display: none; width: 100%; height: 100%; }
         .tab-content.active { display: block; }
         iframe { width: 100%; height: 100%; border: none; }
 
         /* ========================================= */
-        /* CSS สำหรับหน้า Tab 4 (Stencil Dashboard) */
+        /* CSS สำหรับหน้า 3 (Global Search) ของเดิม */
+        /* ========================================= */
+        .search-container { padding: 40px; text-align: center; max-width: 800px; margin: 0 auto; }
+        .google-search-box { width: 100%; padding: 15px 25px; border-radius: 30px; border: 1px solid #dfe1e5; font-size: 18px; outline: none; box-shadow: 0 1px 6px rgba(32,33,36,.28); box-sizing: border-box; }
+        .google-search-box:focus { box-shadow: 0 1px 8px rgba(32,33,36,.4); }
+        .search-btn { padding: 12px 25px; border-radius: 5px; border: none; background: #f8f9fa; color: #3c4043; cursor: pointer; margin-top: 20px; font-size: 15px; border: 1px solid #f8f9fa; transition: 0.2s; font-weight: bold; }
+        .search-btn:hover { border: 1px solid #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,.1); background: #f1f3f4; }
+        .result-card { margin-top: 40px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; text-align: left; display: none; background: #ffffff; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .part-title { font-size: 28px; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; }
+        .action-buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .btn-link { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: 0.2s; color: white; }
+        .btn-google-pdf { background-color: #d93025; } .btn-google-pdf:hover { background-color: #b3140b; transform: translateY(-2px); }
+        .btn-google-web { background-color: #fbbc05; color: #333; } .btn-google-web:hover { background-color: #e0a800; transform: translateY(-2px); }
+        .btn-alldatasheet { background-color: #0046ad; } .btn-alldatasheet:hover { background-color: #003380; transform: translateY(-2px); }
+        .btn-octopart { background-color: #10b981; } .btn-octopart:hover { background-color: #059669; transform: translateY(-2px); }
+
+        /* ========================================= */
+        /* CSS สำหรับหน้า 4 (Stencil Dashboard) */
         /* ========================================= */
         .dashboard-grid {
             display: grid;
@@ -51,21 +71,13 @@
             padding: 20px;
             height: calc(100% - 40px);
         }
-
-        /* กล่องย่อยๆ ใน Tab 4 */
         .panel { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .panel-title { font-size: 16px; font-weight: bold; color: #1e293b; margin-top: 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px; }
-        
-        /* ปุ่ม Upload สีม่วงแบบของพี่ */
-        .btn-upload { background: #8b5cf6; color: white; padding: 10px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 15px; }
+        .btn-upload { background: #8b5cf6; color: white; padding: 10px 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 15px; display: inline-block; text-align: center; box-sizing: border-box; transition: 0.2s; }
         .btn-upload:hover { background: #7c3aed; }
-
-        /* ตารางจำลอง */
         table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
         table.data-table th, table.data-table td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
         table.data-table th { background: #f8fafc; color: #475569; }
-
-        /* พื้นที่วางรูปภาพ CAD */
         .cad-viewer { background: #0f172a; border-radius: 8px; height: 350px; display: flex; align-items: center; justify-content: center; color: #64748b; border: 2px dashed #334155; }
     </style>
 </head>
@@ -100,32 +112,84 @@
         </div>
 
         <div class="content-area">
-            <div id="tab1" class="tab-content active"><iframe src="https://asianstanley.github.io/PRODUCTION-SMT/home.html"></iframe></div>
-            <div id="tab2" class="tab-content"><div style="padding: 50px; text-align: center;"><h2>📁 โฟลเดอร์ Design Stencil</h2><button onclick="copyNetworkPath()" id="copyBtn" style="padding: 15px 40px; background: #0046ad; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer;">📋 คัดลอก Path (\\172.16.0.199\Dashboard)</button></div></div>
-            <div id="tab3" class="tab-content"><div class="search-container"><h2>Global Component Search</h2><p>ระบบค้นหา Datasheet</p></div></div>
+            <div id="tab1" class="tab-content active">
+                <iframe src="https://asianstanley.github.io/PRODUCTION-SMT/home.html"></iframe>
+            </div>
+
+            <div id="tab2" class="tab-content">
+                <div style="padding: 50px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #f8fafc;">
+                    <h2 style="color: #1e293b; font-size: 28px;">📁 โฟลเดอร์ Design Stencil (Network Drive)</h2>
+                    
+                    <p style="color: #64748b; font-size: 16px; max-width: 600px; margin-bottom: 30px;">
+                        เนื่องจากระบบรักษาความปลอดภัยของเบราว์เซอร์ จะไม่อนุญาตให้เปิดโฟลเดอร์ในคอมพิวเตอร์ผ่านเว็บได้โดยตรง <br><br>
+                        <b>กรุณากดปุ่มด้านล่างเพื่อคัดลอก (Copy) ที่อยู่โฟลเดอร์ แล้วนำไปวางในช่องค้นหาของ My Computer ครับ</b>
+                    </p>
+                    
+                    <button onclick="copyNetworkPath()" id="copyBtn" style="padding: 15px 40px; background: #0046ad; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: 0.2s;">
+                        📋 คัดลอก Path (\\172.16.0.199\Dashboard)
+                    </button>
+                    
+                    <div style="margin-top: 40px; padding: 20px; background: #fffbeb; border-left: 5px solid #f59e0b; text-align: left; max-width: 550px; border-radius: 0 8px 8px 0;">
+                        <b style="color: #b45309; font-size: 18px;">💡 วิธีเปิดโฟลเดอร์หลังจากกดปุ่ม:</b><br>
+                        <ol style="color: #78350f; font-size: 15px; margin-top: 10px; padding-left: 20px; line-height: 1.6;">
+                            <li>เปิดโฟลเดอร์ใดก็ได้ในเครื่อง หรือเปิด <b>My Computer (This PC)</b></li>
+                            <li>คลิกที่แถบที่อยู่ (Address Bar) ด้านบนสุด (ให้แถบเป็นสีฟ้า)</li>
+                            <li>กด <b>Ctrl + V</b> บนคีย์บอร์ดเพื่อวางข้อความ แล้วกด <b>Enter</b> โฟลเดอร์จะเปิดขึ้นมาทันทีครับ</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab3" class="tab-content">
+                <div class="search-container">
+                    <div style="font-size: 40px; font-weight: 900; margin-bottom: 20px; letter-spacing: -1px;">
+                        <span style="color: #4285F4;">G</span><span style="color: #EA4335;">l</span><span style="color: #FBBC05;">o</span><span style="color: #4285F4;">b</span><span style="color: #34A853;">a</span><span style="color: #EA4335;">l</span>
+                        <span style="color: #5f6368; font-size: 30px;"> Component Search</span>
+                    </div>
+                    
+                    <input type="text" id="searchInput" class="google-search-box" placeholder="พิมพ์ชื่อ Part Code (เช่น CER7042B-101M-RB)" onkeypress="handleSearchEnter(event)">
+                    <br>
+                    <button class="search-btn" onclick="searchGlobalData()">🔍 ค้นหา Datasheet อัตโนมัติ</button>
+
+                    <div id="resultBox" class="result-card">
+                        <p style="color: #64748b; margin: 0; font-weight: bold;">สร้างลิงก์ค้นหาสำหรับ Part Number:</p>
+                        <h2 id="resPartTitle" class="part-title"></h2>
+                        <div class="action-buttons">
+                            <a id="linkGooglePDF" href="#" target="_blank" class="btn-link btn-google-pdf">
+                                <span>📄 ค้นหาไฟล์ PDF ตรงๆ ด้วย Google</span><span>➔</span>
+                            </a>
+                            <a id="linkGoogleWeb" href="#" target="_blank" class="btn-link btn-google-web">
+                                <span>🌐 ค้นหาหน้า Spec ผู้ผลิตด้วย Google</span><span>➔</span>
+                            </a>
+                            <a id="linkAllDatasheet" href="#" target="_blank" class="btn-link btn-alldatasheet">
+                                <span>📘 ค้นหาบนฐานข้อมูล ALLDATASHEET</span><span>➔</span>
+                            </a>
+                            <a id="linkOctopart" href="#" target="_blank" class="btn-link btn-octopart">
+                                <span>⚙️ เช็คขนาด (Dimension) บน OCTOPART</span><span>➔</span>
+                            </a>
+                        </div>
+                    </div>
+                    <p id="noInputAlert" style="color: #d93025; display: none; margin-top: 20px; font-weight: bold;">
+                        ⚠️ กรุณาพิมพ์ชื่อ Part Code ก่อนกดค้นหาครับ
+                    </p>
+                </div>
+            </div>
 
             <div id="tab4" class="tab-content" style="background-color: #f1f5f9;">
-                
                 <div class="dashboard-grid">
                     
                     <div class="panel" style="grid-row: span 2;">
                         <h3 class="panel-title">📂 File Operations</h3>
-                        <button class="btn-upload">📤 Upload Excel / CSV (รอเขียนโค้ด)</button>
+                        
+                        <label for="excel-upload" class="btn-upload">📤 Upload Excel / CSV</label>
+                        <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="display: none;" onchange="readExcelFile(event)">
                         
                         <h3 class="panel-title" style="margin-top: 30px;">🔍 Part Name Results</h3>
                         <input type="text" placeholder="Search part name..." style="width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px;">
                         
                         <div style="height: 400px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 10px; overflow-y: auto;">
-                            <ul style="list-style-type: none; padding-left: 0; font-size: 14px; color: #334155;">
-                                <li style="margin-bottom: 8px;">📁 <b>IC</b>
-                                    <ul style="list-style-type: none; padding-left: 20px; color: #2563eb; margin-top: 5px;">
-                                        <li style="cursor: pointer; margin-bottom: 5px; font-weight: bold;">📄 AL8860QMP-13</li>
-                                        <li style="cursor: pointer; margin-bottom: 5px;">📄 AD00013200A</li>
-                                        <li style="cursor: pointer; margin-bottom: 5px;">📄 NJM2903R-TE1</li>
-                                    </ul>
-                                </li>
-                                <li style="margin-bottom: 8px;">📁 <b>Diode</b></li>
-                                <li style="margin-bottom: 8px;">📁 <b>Transistor</b></li>
+                            <ul id="part-list" style="list-style-type: none; padding-left: 0; font-size: 14px; color: #334155;">
+                                <li style="margin-bottom: 8px;">อัปโหลดไฟล์เพื่อแสดงข้อมูล...</li>
                             </ul>
                         </div>
                     </div>
@@ -133,44 +197,28 @@
                     <div class="panel">
                         <h3 class="panel-title">📐 Draft Design Visualization & Overlay Viewer</h3>
                         <div class="cad-viewer">
-                            <p>พื้นที่สำหรับแสดงรูปภาพ PAD, MAT, Stencil (รอเชื่อมต่อใน Step ถัดไป)</p>
+                            <p>พื้นที่สำหรับแสดงรูปภาพ PAD, MAT, Stencil</p>
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        
                         <div class="panel">
                             <h3 class="panel-title">⏱️ Version Control (Revision History)</h3>
                             <table class="data-table">
-                                <thead>
-                                    <tr><th>Revision</th><th>Date</th><th>Detail</th><th>Model</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>V1</td><td>10-Sep-25</td><td>New Issued Design</td><td>T41 HL</td></tr>
-                                    <tr><td>V1</td><td>10-Sep-25</td><td>Common Design</td><td>T41 RCL</td></tr>
-                                </tbody>
+                                <thead><tr><th>Revision</th><th>Date</th><th>Detail</th><th>Model</th></tr></thead>
+                                <tbody><tr><td colspan="4" style="text-align:center;">รอข้อมูล...</td></tr></tbody>
                             </table>
                         </div>
-
                         <div class="panel">
                             <h3 class="panel-title">⚙️ Design Parameters</h3>
                             <table class="data-table">
-                                <thead>
-                                    <tr><th>Parameter</th><th>Value</th><th>Unit</th></tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Volume of Gap</td><td>0.42</td><td>mm^3</td></tr>
-                                    <tr><td>Volume of Solder</td><td>0.26</td><td>mm^3</td></tr>
-                                    <tr><td>Stencil Area</td><td>2.08</td><td>mm^2</td></tr>
-                                    <tr><td>Stencil % of Pad</td><td>61.36</td><td>%</td></tr>
-                                </tbody>
+                                <thead><tr><th>Parameter</th><th>Value</th><th>Unit</th></tr></thead>
+                                <tbody><tr><td colspan="3" style="text-align:center;">รอข้อมูล...</td></tr></tbody>
                             </table>
                         </div>
-
                     </div>
 
                 </div>
-
             </div>
 
         </div>
@@ -178,7 +226,9 @@
 </div>
 
 <script>
-    // สคริปต์ Login
+    // =========================================
+    // 1. ระบบ Login
+    // =========================================
     function checkLogin() {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
@@ -196,12 +246,93 @@
         document.getElementById('login-screen').style.display = "flex";
     }
 
-    // สคริปต์สลับหน้า
+    // =========================================
+    // 2. ระบบจัดการ Tab Menu
+    // =========================================
     function switchTab(id, el) {
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         el.classList.add('active');
         document.getElementById(id).classList.add('active');
+    }
+
+    // =========================================
+    // 3. ระบบ Copy Network Path (หน้า 2)
+    // =========================================
+    function copyNetworkPath() {
+        const path = "\\\\172.16.0.199\\Dashboard"; 
+        navigator.clipboard.writeText(path).then(() => {
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = "✅ คัดลอกสำเร็จ! (นำไปวางใน My Computer ได้เลย)";
+            btn.style.background = "#10b981"; 
+            setTimeout(() => {
+                btn.innerHTML = "📋 คัดลอก Path (\\\\172.16.0.199\\Dashboard)";
+                btn.style.background = "#0046ad";
+            }, 3000);
+        }).catch(err => {
+            alert('ไม่สามารถคัดลอกได้ กรุณาก๊อปปี้ \\\\172.16.0.199\\Dashboard ด้วยตัวเองครับ');
+        });
+    }
+
+    // =========================================
+    // 4. ระบบค้นหา Datasheet (หน้า 3)
+    // =========================================
+    function handleSearchEnter(event) {
+        if (event.key === "Enter") searchGlobalData();
+    }
+    function searchGlobalData() {
+        const input = document.getElementById('searchInput').value.trim();
+        const resBox = document.getElementById('resultBox');
+        const alertBox = document.getElementById('noInputAlert');
+        
+        if (input === "") {
+            resBox.style.display = "none";
+            alertBox.style.display = "block";
+            return;
+        }
+
+        alertBox.style.display = "none";
+        resBox.style.display = "block";
+        document.getElementById('resPartTitle').innerText = input.toUpperCase();
+
+        const encodedInput = encodeURIComponent(input);
+        const exactMatch = `%22${encodedInput}%22`; 
+
+        document.getElementById('linkGooglePDF').href = `https://www.google.com/search?q=${exactMatch}+datasheet+filetype:pdf`;
+        document.getElementById('linkGoogleWeb').href = `https://www.google.com/search?q=${exactMatch}+"features"+OR+"specifications"`;
+        document.getElementById('linkAllDatasheet').href = `https://www.alldatasheet.com/view.jsp?Searchword=${encodedInput}`;
+        document.getElementById('linkOctopart').href = `https://octopart.com/search?q=${encodedInput}`;
+    }
+
+    // =========================================
+    // 5. ระบบอ่านไฟล์ Excel (หน้า 4)
+    // =========================================
+    function readExcelFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // ใช้สมองกล SheetJS แกะข้อมูลไฟล์
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            
+            // ดึงชื่อ Sheet ทั้งหมดมาโชว์
+            const sheetNames = workbook.SheetNames.join(", ");
+            
+            // เด้งแจ้งเตือนเพื่อพิสูจน์ว่าเว็บอ่านไฟล์ได้จริง!
+            alert("🎉 ระบบอ่านไฟล์ Excel สำเร็จแล้ว!\n\nชื่อไฟล์: " + file.name + "\nพบ Sheet ชื่อ: " + sheetNames);
+
+            // อัปเดตรายชื่อในเมนูด้านซ้ายให้เห็นชื่อไฟล์ที่อัปโหลด
+            document.getElementById('part-list').innerHTML = `
+                <li style="margin-bottom: 8px;">📁 <b>Uploaded File</b>
+                    <ul style="list-style-type: none; padding-left: 20px; color: #2563eb; margin-top: 5px;">
+                        <li style="cursor: pointer; margin-bottom: 5px; font-weight: bold;">📄 ${file.name.replace('.xlsx', '')}</li>
+                    </ul>
+                </li>
+            `;
+        };
+        reader.readAsArrayBuffer(file);
     }
 </script>
 
